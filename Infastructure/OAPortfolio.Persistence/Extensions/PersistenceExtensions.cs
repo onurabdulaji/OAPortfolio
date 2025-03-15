@@ -2,8 +2,12 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using OAPortfolio.Application.Interfaces.IRepositories;
+using OAPortfolio.Application.Interfaces.IUnitOfWorks;
 using OAPortfolio.Domain.Entities;
 using OAPortfolio.Persistence.Context;
+using OAPortfolio.Persistence.Repositories;
+using OAPortfolio.Persistence.UnitOfWorks;
 
 namespace OAPortfolio.Persistence.Extensions;
 
@@ -27,5 +31,11 @@ public static class PersistenceExtensions
         })
             .AddEntityFrameworkStores<AppDbContext>()
             .AddDefaultTokenProviders();
+
+
+        services.AddScoped(typeof(IReadRepository<>), typeof(ReadRepository<>));
+        services.AddScoped(typeof(IWriteRepository<>), typeof(WriteRepository<>));
+
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
     }
 }
