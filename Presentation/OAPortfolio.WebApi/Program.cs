@@ -16,6 +16,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    await app.Services.UseIdentityDatabaseSeederAsync();
 }
 
 app.UseHttpsRedirection();
