@@ -12,7 +12,7 @@ using OAPortfolio.Persistence.Context;
 namespace OAPortfolio.Persistence.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250315224325_Initial")]
+    [Migration("20250316063627_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
