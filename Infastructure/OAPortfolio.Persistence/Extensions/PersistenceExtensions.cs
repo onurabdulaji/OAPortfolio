@@ -36,6 +36,12 @@ public static class PersistenceExtensions
             .AddDefaultTokenProviders();
         services.AddScoped<IdentitySeeder>();
 
+        services.AddIdentityCore<User>(opt => 
+        { opt.SignIn.RequireConfirmedEmail = true; })
+            .AddRoles<Role>()
+            .AddEntityFrameworkStores<AppDbContext>()
+            .AddDefaultTokenProviders();
+
 
         services.AddScoped(typeof(IReadRepository<>), typeof(ReadRepository<>));
         services.AddScoped(typeof(IWriteRepository<>), typeof(WriteRepository<>));

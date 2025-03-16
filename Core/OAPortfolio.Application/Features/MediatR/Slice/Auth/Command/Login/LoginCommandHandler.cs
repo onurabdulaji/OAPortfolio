@@ -17,7 +17,6 @@ public static class LoginCommandHandler
 {
     public class LoginCommandRequest : IRequest<LoginCommandResponse>
     {
-        [DefaultValue("onurabdulaji@gmail.com")]
         public string Email { get; set; }
         [DefaultValue("Admin123!@#")]
         public string Password { get; set; }
@@ -49,58 +48,90 @@ public static class LoginCommandHandler
 
         public async Task<LoginCommandResponse> Handle(LoginCommandRequest request, CancellationToken cancellationToken)
         {
-            // Kullanıcı kontrolü
             var user = await userManager.FindByEmailAsync(request.Email);
-            if (user == null)
-            {
-                throw new UnauthorizedAccessException("Invalid email or password.");
-            }
-            // Şifre kontrolü
-            var checkPassword = await userManager.CheckPasswordAsync(user, request.Password);
-            if (!checkPassword)
-            {
-                throw new UnauthorizedAccessException("Invalid email or password.");
-            }
-            // Kullanıcının rollerini al
-            var roles = await userManager.GetRolesAsync(user);
-            if (roles == null || !roles.Any())
-            {
-                throw new UnauthorizedAccessException("User does not have any roles assigned.");
-            }
-            // Token oluştur
-            var token = await tokenService.CreateToken(user, roles);
-            var refreshToken = tokenService.GenerateRefreshToken();
+            bool checkPassword = await userManager.CheckPasswordAsync(user, request.Password);
 
-            if (!int.TryParse(configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays))
-            {
-                refreshTokenValidityInDays = 7; // Default değer
-            }
-            user.RefreshToken = refreshToken;
-            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+            await authRules.EmailOrPasswordShouldNotBeInvalid(user, checkPassword);
 
-            await userManager.UpdateAsync(user);
-            await userManager.UpdateSecurityStampAsync(user);
+           var roles = await userManager.GetRolesAsync(user);
 
-            var _token = new JwtSecurityTokenHandler().WriteToken(token);
-            await userManager.SetAuthenticationTokenAsync(user, "Bearer", "Token", _token);
-
-            return new LoginCommandResponse
-            {
-                Token = _token,
-                RefreshToken = refreshToken,
-                Expiration = token.ValidTo
-            };
+            return null;
         }
-    }
-    public class Endpoint : ICarterModule
-    {
-        public void AddRoutes(IEndpointRouteBuilder app)
+        public class Endpoint : ICarterModule
         {
-            app.MapPost("/api/auth/login", async (LoginCommandRequest command, ISender sender) =>
+            public void AddRoutes(IEndpointRouteBuilder app)
             {
-                var response = await sender.Send(command);
-                return Results.Ok(response);
-            });
+                app.MapPost("/api/auth/login", async (LoginCommandRequest command, ISender sender) =>
+                {
+                    var response = await sender.Send(command);
+                    return Results.Ok(response);
+                });
+            }
         }
     }
 }
+    
+
+
+
+//// Kullanıcı kontrolü
+//            var user = await userManager.FindByEmailAsync(request.Email);
+//            if (user == null)
+//            {
+//                throw new UnauthorizedAccessException("Invalid email or password.");
+//            }
+
+//            // Kullanıcının rollerini al
+//            var roles = await userManager.GetRolesAsync(user);
+//if (roles == null || !roles.Any())
+//{
+//    throw new UnauthorizedAccessException("User does not have any roles assigned.");
+//}
+//else
+//{
+//    // Rol atanmışsa buraya düşer ve kullanıcıya ait roller burada listelenir
+//    Console.WriteLine("Roles: " + string.Join(", ", roles));
+//}
+
+//var role = await roleManager.FindByNameAsync("Admin");
+//if (role == null)
+//{
+//    // Admin rolü yoksa, yeni rol oluşturulabilir
+//    var result = await roleManager.CreateAsync(new Role { Name = "Admin" });
+//    if (!result.Succeeded)
+//    {
+//        throw new Exception("Failed to create role.");
+//    }
+//}
+
+
+//// Şifre kontrolü
+//var checkPassword = await userManager.CheckPasswordAsync(user, request.Password);
+//if (!checkPassword)
+//{
+//    throw new UnauthorizedAccessException("Invalid email or password.");
+//}
+
+//// Token oluştur
+//var token = await tokenService.CreateToken(user, roles);
+//var refreshToken = tokenService.GenerateRefreshToken();
+
+//if (!int.TryParse(configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays))
+//{
+//    refreshTokenValidityInDays = 7; // Default değer
+//}
+//user.RefreshToken = refreshToken;
+//user.RefreshTokenExpiryTime = DateTime.Now.AddDays(refreshTokenValidityInDays);
+
+//await userManager.UpdateAsync(user);
+//await userManager.UpdateSecurityStampAsync(user);
+
+//var _token = new JwtSecurityTokenHandler().WriteToken(token);
+//await userManager.SetAuthenticationTokenAsync(user, "Bearer", "Token", _token);
+
+//return new LoginCommandResponse
+//{
+//    Token = _token,
+//    RefreshToken = refreshToken,
+//    Expiration = token.ValidTo
+//};

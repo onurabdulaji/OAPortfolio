@@ -41,19 +41,19 @@ namespace OAPortfolio.Persistence.Seed
                 if (result.Succeeded)
                 {
                     // RoleManager'dan rolü alıyoruz
-                    var rolq = await roleManager.FindByNameAsync("Admin");
+                    var role1 = await roleManager.FindByNameAsync("Admin");
 
-                    if (rolq == null)
+                    if (role1 == null)
                     {
-                        rolq = new Role { Name = "Admin" };
-                        await roleManager.CreateAsync(rolq); // Admin rolünü yaratıyoruz
+                        role1 = new Role { Name = "Admin" };
+                        await roleManager.CreateAsync(role1); // Admin rolünü yaratıyoruz
                     }
 
                     // DbContext kullanarak ilişkiyi elle ekliyoruz
                     var userRole = new IdentityUserRole<Guid>
                     {
                         UserId = adminUser.Id,  // Admin kullanıcısının Id'si
-                        RoleId = rolq.Id         // Admin rolünün Id'si
+                        RoleId = role1.Id         // Admin rolünün Id'si
                     };
 
                     // DbContext'e ilişkiyi ekliyoruz
