@@ -15,6 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Infastructure\OAPortfolio.Infastructure\OAPortfolio.Infastructure.csproj" />
     <ProjectReference Include="..\..\Infastructure\OAPortfolio.Persistence\OAPortfolio.Persistence.csproj" />
   </ItemGroup>
 
