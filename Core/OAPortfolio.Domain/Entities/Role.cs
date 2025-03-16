@@ -8,5 +8,8 @@ public class Role : IdentityRole<Guid>, IEntityBase
     public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
     public DateTime ModifiedDate { get; set; } = DateTime.UtcNow;
     public bool IsDeleted { get; set; } = false;
-    public Role() { }
+    public Role()
+    {
+        
+    }
 }

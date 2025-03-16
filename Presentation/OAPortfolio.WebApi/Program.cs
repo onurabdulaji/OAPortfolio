@@ -1,4 +1,6 @@
+using Carter;
 using Microsoft.OpenApi.Models;
+using OAPortfolio.Application.Extensions;
 using OAPortfolio.Infastructure.Extensions;
 using OAPortfolio.Persistence.Extensions;
 
@@ -7,9 +9,11 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddPersistenceLayer(builder.Configuration);
 builder.Services.AddInfastructureLayer(builder.Configuration);
+builder.Services.AddApplicationLayer(builder.Configuration);
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCarter();
 
 builder.Services.AddSwaggerGen
 (c =>
@@ -48,10 +52,11 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-    await app.Services.UseIdentityDatabaseSeederAsync();
 }
+await app.Services.UseIdentityDatabaseSeederAsync();
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.UseAuthorization();
 app.MapControllers();
+app.MapCarter();
 app.Run();
